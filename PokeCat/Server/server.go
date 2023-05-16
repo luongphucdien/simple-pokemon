@@ -2,18 +2,25 @@ package server
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	world "github.com/simple-pokemon/go/PokeCat/World"
 )
 
-type TestComp struct {
-	Test string
+type KeyPressed struct {
+	Key string
 }
 
+var number int
+
 func StartServer() {
+
 	router := gin.New()
 	router.Use(CORSMiddleware())
 	router.GET("/api/test", test)
+	router.POST("/api/player/action", playerAction)
+	router.GET("/api/world", getWorld)
 
 	router.Run(":8080")
 }
@@ -37,4 +44,31 @@ func CORSMiddleware() gin.HandlerFunc {
 func test(c *gin.Context) {
 	data := "Test"
 	c.IndentedJSON(http.StatusOK, data)
+}
+
+func playerAction(c *gin.Context) {
+	var key KeyPressed
+
+	if err := c.ShouldBindJSON(&key); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	playerAction := strings.ToLower(key.Key)
+	if playerAction == "w" {
+		number++
+	} else if playerAction == "s" {
+		number--
+	}
+
+	c.JSON(http.StatusOK, gin.H{"key": number})
+}
+
+// func getNumber(c *gin.Context) {
+// 	c.JSON(http.StatusOK, gin.H{"number": number})
+// }
+
+func getWorld(c *gin.Context) {
+	world := world.StartWorld()
+	c.JSON(http.StatusOK, gin.H{"world": world})
 }
