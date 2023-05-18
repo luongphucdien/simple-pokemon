@@ -69,6 +69,6 @@ func playerAction(c *gin.Context) {
 // }
 
 func getWorld(c *gin.Context) {
-	world := world.StartWorld()
-	c.JSON(http.StatusOK, gin.H{"world": world})
+	world := world.NewWorld()
+	c.JSON(http.StatusOK, gin.H{"world": world.WorldGrid})
 }

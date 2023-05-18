@@ -22,8 +22,11 @@ async function testNoParams() {
     })
 }
 
-async function getWorld() {
-    await axios.get(`${API_URL}/world`).then(r => console.log(r.data)).catch((error: AxiosError) => {
+async function getWorld(setState: (data: any) => void) {
+    await axios.get(`${API_URL}/world`).then(r => {
+        console.log(r.data.world)
+        setState(r.data.world)
+    }).catch((error: AxiosError) => {
         console.log(error.response)
     })
 }
