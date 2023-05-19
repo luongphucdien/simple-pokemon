@@ -25,7 +25,7 @@ async function testNoParams() {
 
 async function getWorld(setState: (data: any) => void) {
     await axios.get(`${API_URL}/world`).then(r => {
-        console.log(r.data.world)
+        console.log(r.data["world_data"])
         setState(r.data.world)
     }).catch((error: AxiosError) => {
         console.log(error.response)

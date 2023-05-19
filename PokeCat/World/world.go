@@ -1,6 +1,9 @@
 package world
 
 import (
+	"math/rand"
+	"time"
+
 	entity "github.com/simple-pokemon/go/PokeCat/Entity"
 )
 
@@ -30,6 +33,8 @@ type FreeTile struct {
 }
 
 func NewWorld() World {
+	PLAYERS_ONLINE = make([]entity.Player, 0)
+	POKEMON_LIST = make([]entity.Pokemon, 0)
 
 	pokeListTest := []entity.Pokemon{
 		{Name: "test1", Entity: entity.Entity{Coordinate: entity.Coordinate{X: 5, Y: 5}}},
@@ -40,10 +45,12 @@ func NewWorld() World {
 	}
 
 	newWorld := World{
-		WorldGrid:  __initWorldGrid(make([]entity.Player, 0), pokeListTest),
+		WorldGrid:  make([][]string, WORLD_SIZE),
 		PokeList:   pokeListTest,
-		PlayerList: PLAYERS_ONLINE,
+		PlayerList: make([]entity.Player, 0),
 	}
+
+	newWorld.WorldGrid = __initWorldGrid(newWorld.PlayerList, pokeListTest)
 	return newWorld
 }
 
@@ -76,8 +83,34 @@ func __spawnEntities(worldGrid [][]string, pokemonList []entity.Pokemon, playerL
 	}
 }
 
-func AddPlayer(playerList []entity.Player, player entity.Player) {
-	playerList = append(playerList, player)
+func AddPlayer(player entity.Player) {
+	WORLD.PlayerList = append(WORLD.PlayerList, player)
+	__updatePlayer(WORLD.WorldGrid, WORLD.PlayerList)
+}
+
+func GenerateRandomCoordinate(player entity.Player) entity.Player {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	xCoord := r.Intn(WORLD_SIZE - 0) + 0
+	yCoord := r.Intn(WORLD_SIZE - 0) + 0
+
+	RECHECK:
+	if WORLD.WorldGrid[yCoord][xCoord] == "FT" {
+		player.Coordinate.X = xCoord
+		player.Coordinate.Y = yCoord
+		return player
+	} else {
+		xCoord = r.Intn(WORLD_SIZE - 0) + 0
+		yCoord = r.Intn(WORLD_SIZE - 0) + 0
+		goto RECHECK
+	}
+}
+
+func __updatePlayer(worldGrid [][]string, playerList []entity.Player) {
+	for _, player := range playerList {
+		worldGrid[player.Coordinate.Y][player.Coordinate.X] = PLAYER_SYMBOL
+	}
+	WORLD.PlayerList = PLAYERS_ONLINE
 }
 
 // func StartWorld() World{

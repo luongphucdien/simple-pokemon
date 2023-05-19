@@ -7,7 +7,6 @@ export const World = () => {
     
     const map = useRef<SVGGElement>(null)
     
-
     useEffect(() => {
         getWorld(setWorldGrid)
 

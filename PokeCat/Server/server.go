@@ -75,7 +75,7 @@ func playerAction(c *gin.Context) {
 // }
 
 func getWorld(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"world": world.WORLD.WorldGrid})
+	c.JSON(http.StatusOK, gin.H{"world": world.WORLD.WorldGrid, "world_data": world.WORLD})
 }
 
 func checkPlayer(c *gin.Context) {
@@ -98,8 +98,10 @@ func checkPlayer(c *gin.Context) {
 		defer playerFile.Close()
 
 		enc := gob.NewEncoder(playerFile)
-		enc.Encode(player)
+		enc.Encode(&player)
 
+		player = world.GenerateRandomCoordinate(player)
+		world.AddPlayer(player)
 		c.JSON(http.StatusCreated, gin.H{"msg": "This is a new player. Returns player", "player_state": "PLAYER_NEW", "player": player})
 	} else {
 		playerFile, err := os.Open("./PokeCat/Server/players/" + player.Username + ".gob")
@@ -114,6 +116,7 @@ func checkPlayer(c *gin.Context) {
 		dec.Decode(&existedPlayer)
 
 		if player.Password == existedPlayer.Password {
+			world.AddPlayer(existedPlayer)
 			c.JSON(http.StatusOK, gin.H{"msg": "Player exists. Returns existed player", "player_state": "PLAYER_OLD", "player": existedPlayer})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"msg": "Player exists. Password unmatched", "player_state": "PLAYER_UNAUTHORIZED"})
