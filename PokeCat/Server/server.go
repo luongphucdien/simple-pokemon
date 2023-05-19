@@ -1,10 +1,14 @@
 package server
 
 import (
+	"encoding/gob"
+	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	entity "github.com/simple-pokemon/go/PokeCat/Entity"
 	world "github.com/simple-pokemon/go/PokeCat/World"
 )
 
@@ -21,6 +25,8 @@ func StartServer() {
 	router.GET("/api/test", test)
 	router.POST("/api/player/action", playerAction)
 	router.GET("/api/world", getWorld)
+	router.POST("/api/player", checkPlayer)
+	// router.GET("/api/player", getPlayer)
 
 	router.Run(":8080")
 }
@@ -69,6 +75,53 @@ func playerAction(c *gin.Context) {
 // }
 
 func getWorld(c *gin.Context) {
-	world := world.NewWorld()
-	c.JSON(http.StatusOK, gin.H{"world": world.WorldGrid})
+	c.JSON(http.StatusOK, gin.H{"world": world.WORLD.WorldGrid})
 }
+
+func checkPlayer(c *gin.Context) {
+	var player entity.Player
+
+	if err := c.ShouldBindJSON(&player); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if _, err := os.Stat("./PokeCat/Server/players/" + player.Username + ".gob"); err != nil {
+		player.Coordinate.X = 5
+		player.Coordinate.Y = 5
+
+		playerFile, err := os.Create("./PokeCat/Server/players/" + player.Username + ".gob")
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+		defer playerFile.Close()
+
+		enc := gob.NewEncoder(playerFile)
+		enc.Encode(player)
+
+		c.JSON(http.StatusCreated, gin.H{"msg": "This is a new player. Returns player", "player_state": "PLAYER_NEW", "player": player})
+	} else {
+		playerFile, err := os.Open("./PokeCat/Server/players/" + player.Username + ".gob")
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return
+		}
+		defer playerFile.Close()
+
+		dec := gob.NewDecoder(playerFile)
+		var existedPlayer entity.Player
+		dec.Decode(&existedPlayer)
+
+		if player.Password == existedPlayer.Password {
+			c.JSON(http.StatusOK, gin.H{"msg": "Player exists. Returns existed player", "player_state": "PLAYER_OLD", "player": existedPlayer})
+		} else {
+			c.JSON(http.StatusUnauthorized, gin.H{"msg": "Player exists. Password unmatched", "player_state": "PLAYER_UNAUTHORIZED"})
+		}
+	}
+
+}
+
+// func getPlayer(c *gin.Context) {
+// 	player, err := os.Open("./Server/players" + player.Username + ".gob")
+// }

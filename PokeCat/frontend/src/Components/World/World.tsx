@@ -19,7 +19,7 @@ export const World = () => {
             let g:SVGGElement = map.current!
 
             if (e.key.toLowerCase() === "w") {
-                if(g.transform.baseVal.numberOfItems == 0) {
+                if(g.transform.baseVal.numberOfItems === 0) {
                     g.setAttribute("transform", "translate(" + 0 + "," + (40) + ")")
                 }
                 else {
@@ -28,7 +28,7 @@ export const World = () => {
                 }
             }
             else if (e.key.toLowerCase() === "s") {
-                if(g.transform.baseVal.numberOfItems == 0) {
+                if(g.transform.baseVal.numberOfItems === 0) {
                     g.setAttribute("transform", "translate(" + 0 + "," + (-40) + ")")
                 }
                 else {
@@ -37,7 +37,7 @@ export const World = () => {
                 }
             }
             else if (e.key.toLowerCase() === "a") {
-                if(g.transform.baseVal.numberOfItems == 0) {
+                if(g.transform.baseVal.numberOfItems === 0) {
                     g.setAttribute("transform", "translate(" + (40) + "," + 0 + ")")
                 }
                 else {
@@ -46,7 +46,7 @@ export const World = () => {
                 }
             }
             else if (e.key.toLowerCase() === "d") {
-                if(g.transform.baseVal.numberOfItems == 0) {
+                if(g.transform.baseVal.numberOfItems === 0) {
                     g.setAttribute("transform", "translate(" + (-40) + "," + 0 + ")")
                 }
                 else {

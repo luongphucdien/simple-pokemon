@@ -9,6 +9,10 @@ const FREE_TILE_SYMBOL = "FT"
 const PLAYER_SYMBOL = "#"
 const POKEMON_SYMBOL = "&"
 
+var WORLD World
+var PLAYERS_ONLINE []entity.Player
+var POKEMON_LIST []entity.Pokemon
+
 type World struct {
 	WorldGrid  [][]string
 	PokeList   []entity.Pokemon
@@ -35,15 +39,10 @@ func NewWorld() World {
 		{Name: "test5", Entity: entity.Entity{Coordinate: entity.Coordinate{X: 2, Y: 8}}},
 	}
 
-	playerListTest := []entity.Player{
-		{Name: "player1", Entity: entity.Entity{Coordinate: entity.Coordinate{X: 5, Y: 5}}},
-		{Name: "player2", Entity: entity.Entity{Coordinate: entity.Coordinate{X: 6, Y: 6}}},
-	}
-
 	newWorld := World{
-		WorldGrid:  __initWorldGrid(playerListTest, pokeListTest),
+		WorldGrid:  __initWorldGrid(make([]entity.Player, 0), pokeListTest),
 		PokeList:   pokeListTest,
-		PlayerList: playerListTest,
+		PlayerList: PLAYERS_ONLINE,
 	}
 	return newWorld
 }
@@ -75,6 +74,10 @@ func __spawnEntities(worldGrid [][]string, pokemonList []entity.Pokemon, playerL
 	for _, player := range playerList {
 		worldGrid[player.Coordinate.Y][player.Coordinate.X] = PLAYER_SYMBOL
 	}
+}
+
+func AddPlayer(playerList []entity.Player, player entity.Player) {
+	playerList = append(playerList, player)
 }
 
 // func StartWorld() World{
