@@ -2,6 +2,8 @@ package entity
 
 type Player struct {
 	Entity
-	Name string
+	Username string
+	Password string
 	// movement Movement
 }
+

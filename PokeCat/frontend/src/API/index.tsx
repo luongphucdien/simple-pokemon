@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios"
+import { UserData } from "../Components/Login"
 
 const API_URL = "http://localhost:8080/api"
 
@@ -31,4 +32,18 @@ async function getWorld(setState: (data: any) => void) {
     })
 }
 
-export {test, testNoParams, sendAction, getWorld}
+async function addPlayer(userData: UserData, setIsHidden: (state: boolean) => void) {
+    await axios.post(`${API_URL}/player`, userData).then(r => {
+        console.log(r.data)
+        if (r.data["player_state"] === "PLAYER_OLD" || r.data["player_state"] === "PLAYER_NEW") {
+            setIsHidden(true)
+        }
+        else {
+            setIsHidden(false)
+        }
+    }).catch((err: AxiosError) => {
+        console.log(err.response)
+    })
+}
+
+export {test, testNoParams, sendAction, getWorld, addPlayer}
