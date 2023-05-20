@@ -130,9 +130,7 @@ func removePlayer(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	fmt.Println(player.Username)
-
+	
 	for i, p := range world.WORLD.PlayerList {
 		if p.Username == player.Username {
 			world.WORLD.WorldGrid[p.Coordinate.Y][p.Coordinate.X] = world.FREE_TILE_SYMBOL

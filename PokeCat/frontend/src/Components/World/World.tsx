@@ -66,10 +66,17 @@ export const World = (props: {setUsername: (username: string) => void, username:
             }
         }
 
+        const alertPlayer = () => {
+            removePlayer(props.username)
+            props.setUsername("")
+        }
+
         document.addEventListener('keydown', handleKeydown)
+        window.addEventListener('beforeunload', alertPlayer)
 
         return () => {
             document.removeEventListener('keydown', handleKeydown)
+            window.removeEventListener('beforeunload', alertPlayer)
         }
     }, [])
 
