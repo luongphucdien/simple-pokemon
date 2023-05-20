@@ -87,9 +87,6 @@ func checkPlayer(c *gin.Context) {
 	}
 
 	if _, err := os.Stat("./PokeCat/Server/players/" + player.Username + ".gob"); err != nil {
-		player.Coordinate.X = 5
-		player.Coordinate.Y = 5
-
 		playerFile, err := os.Create("./PokeCat/Server/players/" + player.Username + ".gob")
 		if err != nil {
 			fmt.Println("Error: ", err)

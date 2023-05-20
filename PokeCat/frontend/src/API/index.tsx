@@ -32,15 +32,9 @@ async function getWorld(setState: (data: any) => void) {
     })
 }
 
-async function addPlayer(userData: UserData, setIsHidden: (state: boolean) => void) {
+async function addPlayer(userData: UserData) {
     await axios.post(`${API_URL}/player`, userData).then(r => {
         console.log(r.data)
-        if (r.data["player_state"] === "PLAYER_OLD" || r.data["player_state"] === "PLAYER_NEW") {
-            setIsHidden(true)
-        }
-        else {
-            setIsHidden(false)
-        }
     }).catch((err: AxiosError) => {
         console.log(err.response)
     })
