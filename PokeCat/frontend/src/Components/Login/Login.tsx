@@ -9,18 +9,17 @@ export interface UserData {
 }
 
 interface LoginProps {
-    onLoginSuccess: (state: boolean) => void
+    onLoginSuccess: (username: string) => void
 }
 
 export const Login = (props: LoginProps) => {
-    const [isHidden, setIsHidden] = useState(false)
 
     const FormOnFinish = async (data: UserData) => {
         let userData: UserData = {username: data.username, password: ""}
         userData.password = await sha1(data.password)
         console.log(userData)
-        addPlayer(userData, setIsHidden)
-        props.onLoginSuccess(isHidden)
+        addPlayer(userData)
+        props.onLoginSuccess(data.username)
     }
 
     return(

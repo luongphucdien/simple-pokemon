@@ -2,14 +2,16 @@ import React, {useState} from 'react';
 import { test } from './API';
 import { Login } from './Components/Login';
 import { World } from './Components/World';
+import { Test } from './Components/Test';
 
 function App() {
-  const [isHidden, setIsHidden] = useState(false)
+  const [username, setUsername] = useState("")
 
   return (
     <>
       {/* <World/> */}
-      {isHidden ? <World/> : <Login onLoginSuccess={setIsHidden}/>}
+      {username ? <World/> : <Login onLoginSuccess={setUsername}/>}
+      {/* <Test/> */}
     </>
   );
 }
