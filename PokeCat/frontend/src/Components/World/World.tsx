@@ -1,11 +1,22 @@
 import { Col, Row } from "antd"
 import {  useEffect, useRef, useState } from "react"
-import { getWorld, sendAction } from "../../API"
+import { getWorld, removePlayer, sendAction } from "../../API"
 import { Tile } from "../SVG Components"
+import { useIdleTimer } from "react-idle-timer"
 
-export const World = () => {
+export const World = (props: {setUsername: (username: string) => void, username: string}) => {
     
     const map = useRef<SVGGElement>(null)
+
+    const onIdle = () => {
+        removePlayer(props.username)
+        props.setUsername("")
+      }
+    
+      useIdleTimer({
+        onIdle,
+        timeout: 10_000
+      })
     
     useEffect(() => {
         getWorld(setWorldGrid)

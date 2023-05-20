@@ -26,6 +26,7 @@ func StartServer() {
 	router.POST("/api/player/action", playerAction)
 	router.GET("/api/world", getWorld)
 	router.POST("/api/player", checkPlayer)
+	router.POST("/api/player/offline", removePlayer)
 	// router.GET("/api/player", getPlayer)
 
 	router.Run(":8080")
@@ -94,10 +95,11 @@ func checkPlayer(c *gin.Context) {
 		}
 		defer playerFile.Close()
 
+		player = world.GenerateRandomCoordinate(player)
+
 		enc := gob.NewEncoder(playerFile)
 		enc.Encode(&player)
 
-		player = world.GenerateRandomCoordinate(player)
 		world.AddPlayer(player)
 		c.JSON(http.StatusCreated, gin.H{"msg": "This is a new player. Returns player", "player_state": "PLAYER_NEW", "player": player})
 	} else {
@@ -120,6 +122,28 @@ func checkPlayer(c *gin.Context) {
 		}
 	}
 
+}
+
+func removePlayer(c *gin.Context) {
+	var player entity.Player
+	if err := c.ShouldBindJSON(&player); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	fmt.Println(player.Username)
+
+	for i, p := range world.WORLD.PlayerList {
+		if p.Username == player.Username {
+			world.WORLD.WorldGrid[p.Coordinate.Y][p.Coordinate.X] = world.FREE_TILE_SYMBOL
+			result := make([]entity.Player, 0)
+			result = append(result, world.WORLD.PlayerList[:i]...)
+			result = append(result, world.WORLD.PlayerList[i+1:]...)
+			world.WORLD.PlayerList = result
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"world-data": world.WORLD, "msg": "Player offline and removed"})
 }
 
 // func getPlayer(c *gin.Context) {
