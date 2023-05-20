@@ -40,4 +40,12 @@ async function addPlayer(userData: UserData) {
     })
 }
 
-export {test, testNoParams, sendAction, getWorld, addPlayer}
+async function removePlayer(username: string) {
+    await axios.post(`${API_URL}/player/offline`, {"username": username}).then(r => {
+        console.log(r.data["world-data"])
+    }).catch((err: AxiosError) => {
+        console.error(err.response)
+    })
+}
+
+export {test, testNoParams, sendAction, getWorld, addPlayer, removePlayer}

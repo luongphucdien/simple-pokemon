@@ -1,8 +1,6 @@
-import React, {useState} from 'react';
-import { test } from './API';
+import React, {useEffect, useState} from 'react';
 import { Login } from './Components/Login';
 import { World } from './Components/World';
-import { Test } from './Components/Test';
 
 function App() {
   const [username, setUsername] = useState("")
@@ -10,7 +8,7 @@ function App() {
   return (
     <>
       {/* <World/> */}
-      {username ? <World/> : <Login onLoginSuccess={setUsername}/>}
+      {username ? <World username={username} setUsername={setUsername}/> : <Login onLoginSuccess={setUsername}/>}
       {/* <Test/> */}
     </>
   );

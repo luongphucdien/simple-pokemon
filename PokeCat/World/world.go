@@ -91,17 +91,17 @@ func AddPlayer(player entity.Player) {
 func GenerateRandomCoordinate(player entity.Player) entity.Player {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	xCoord := r.Intn(WORLD_SIZE - 0) + 0
-	yCoord := r.Intn(WORLD_SIZE - 0) + 0
+	xCoord := r.Intn(WORLD_SIZE-0) + 0
+	yCoord := r.Intn(WORLD_SIZE-0) + 0
 
-	RECHECK:
+RECHECK:
 	if WORLD.WorldGrid[yCoord][xCoord] == "FT" {
 		player.Coordinate.X = xCoord
 		player.Coordinate.Y = yCoord
 		return player
 	} else {
-		xCoord = r.Intn(WORLD_SIZE - 0) + 0
-		yCoord = r.Intn(WORLD_SIZE - 0) + 0
+		xCoord = r.Intn(WORLD_SIZE-0) + 0
+		yCoord = r.Intn(WORLD_SIZE-0) + 0
 		goto RECHECK
 	}
 }
@@ -110,7 +110,6 @@ func __updatePlayer(worldGrid [][]string, playerList []entity.Player) {
 	for _, player := range playerList {
 		worldGrid[player.Coordinate.Y][player.Coordinate.X] = PLAYER_SYMBOL
 	}
-	WORLD.PlayerList = PLAYERS_ONLINE
 }
 
 // func StartWorld() World{
