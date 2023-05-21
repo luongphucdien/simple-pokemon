@@ -12,10 +12,6 @@ import (
 	world "github.com/simple-pokemon/go/PokeCat/World"
 )
 
-type KeyPressed struct {
-	Key string
-}
-
 var number int
 
 func StartServer() {
@@ -53,22 +49,55 @@ func test(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, data)
 }
 
-func playerAction(c *gin.Context) {
-	var key KeyPressed
+type PlayerAction struct {
+	Action   string
+	Username string
+}
 
-	if err := c.ShouldBindJSON(&key); err != nil {
+func playerAction(c *gin.Context) {
+	var playerAction PlayerAction
+
+	if err := c.ShouldBindJSON(&playerAction); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	playerAction := strings.ToLower(key.Key)
-	if playerAction == "w" {
-		number++
-	} else if playerAction == "s" {
-		number--
-	}
+	keyPressed := strings.ToLower(playerAction.Action)
+	player := world.WORLD.PlayerList[playerAction.Username]
+	fmt.Println(playerAction.Action)
 
-	c.JSON(http.StatusOK, gin.H{"key": number})
+	world.WORLD.Mu.Lock()
+
+	if keyPressed == entity.W {
+		if player.Coordinate.Y-1 >= 0 {
+			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.FREE_TILE_SYMBOL
+			player.Coordinate.Y--
+			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.PLAYER_SYMBOL
+		}
+	} else if keyPressed == entity.S {
+		if player.Coordinate.Y+1 < world.WORLD_SIZE {
+			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.FREE_TILE_SYMBOL
+			player.Coordinate.Y++
+			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.PLAYER_SYMBOL
+		}
+	} else if keyPressed == entity.A {
+		if player.Coordinate.X-1 >= 0 {
+			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.FREE_TILE_SYMBOL
+			player.Coordinate.X--
+			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.PLAYER_SYMBOL
+		}
+	} else if keyPressed == entity.D {
+		if player.Coordinate.X+1 < world.WORLD_SIZE {
+			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.FREE_TILE_SYMBOL
+			player.Coordinate.X++
+			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.PLAYER_SYMBOL
+		}
+	}
+	world.WORLD.PlayerList[playerAction.Username] = player
+
+	world.WORLD.Mu.Unlock()
+
+	c.JSON(http.StatusOK, gin.H{"world-data": world.WORLD})
 }
 
 // func getNumber(c *gin.Context) {
@@ -130,16 +159,23 @@ func removePlayer(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
-	for i, p := range world.WORLD.PlayerList {
-		if p.Username == player.Username {
-			world.WORLD.WorldGrid[p.Coordinate.Y][p.Coordinate.X] = world.FREE_TILE_SYMBOL
-			result := make([]entity.Player, 0)
-			result = append(result, world.WORLD.PlayerList[:i]...)
-			result = append(result, world.WORLD.PlayerList[i+1:]...)
-			world.WORLD.PlayerList = result
-		}
+
+	player = world.WORLD.PlayerList[player.Username]
+
+	world.WORLD.Mu.Lock()
+	world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.FREE_TILE_SYMBOL
+	delete(world.WORLD.PlayerList, player.Username)
+	world.WORLD.Mu.Unlock()
+
+	playerFile, err := os.Open("./PokeCat/Server/players/" + player.Username + ".gob")
+	if err != nil {
+		fmt.Println("Error: ", err)
+		return
 	}
+	defer playerFile.Close()
+
+	enc := gob.NewEncoder(playerFile)
+	enc.Encode(&player)
 
 	c.JSON(http.StatusOK, gin.H{"world-data": world.WORLD, "msg": "Player offline and removed"})
 }

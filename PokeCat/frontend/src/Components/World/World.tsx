@@ -15,15 +15,18 @@ export const World = (props: {setUsername: (username: string) => void, username:
     
       useIdleTimer({
         onIdle,
-        timeout: 10_000
+        timeout: 1800_000,
       })
     
     useEffect(() => {
-        getWorld(setWorldGrid)
+        
+        const interval = setInterval(() => {
+            getWorld(setWorldGrid)
+        }, 500)
 
         const handleKeydown = (e: KeyboardEvent) => {
             e.preventDefault()
-            sendAction(e.key, setKeydown)
+            sendAction(e.key, props.username)
 
             let t: SVGTransform
             let g:SVGGElement = map.current!
@@ -66,27 +69,28 @@ export const World = (props: {setUsername: (username: string) => void, username:
             }
         }
 
-        const alertPlayer = () => {
+        const handleReload = () => {
             removePlayer(props.username)
             props.setUsername("")
         }
 
         document.addEventListener('keydown', handleKeydown)
-        window.addEventListener('beforeunload', alertPlayer)
+        window.addEventListener('beforeunload', handleReload)
 
         return () => {
             document.removeEventListener('keydown', handleKeydown)
-            window.removeEventListener('beforeunload', alertPlayer)
+            window.removeEventListener('beforeunload', handleReload)
+            clearInterval(interval)
         }
     }, [])
 
-    const [keydown, setKeydown] = useState("")
     const [worldGrid, setWorldGrid] = useState<Array<Array<string>>>()
 
     return (
         <>
             <Row justify={"center"}>
                 <Col>
+                    <p>{props.username}</p>
                     
                     <svg viewBox="0 0 400 400" width={400} height={400}>
                         <rect width="100%" height="100%" x="0" y="0" fill="gray"/>

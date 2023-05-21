@@ -2,6 +2,7 @@ package world
 
 import (
 	"math/rand"
+	"sync"
 	"time"
 
 	entity "github.com/simple-pokemon/go/PokeCat/Entity"
@@ -19,7 +20,8 @@ var POKEMON_LIST []entity.Pokemon
 type World struct {
 	WorldGrid  [][]string
 	PokeList   []entity.Pokemon
-	PlayerList []entity.Player
+	PlayerList map[string]entity.Player
+	Mu         sync.RWMutex
 }
 
 type Coordinate struct {
@@ -47,21 +49,21 @@ func NewWorld() World {
 	newWorld := World{
 		WorldGrid:  make([][]string, WORLD_SIZE),
 		PokeList:   pokeListTest,
-		PlayerList: make([]entity.Player, 0),
+		PlayerList: make(map[string]entity.Player),
 	}
 
-	newWorld.WorldGrid = __initWorldGrid(newWorld.PlayerList, pokeListTest)
+	newWorld.WorldGrid = __initWorldGrid(pokeListTest)
 	return newWorld
 }
 
-func __initWorldGrid(playerList []entity.Player, pokeList []entity.Pokemon) [][]string {
+func __initWorldGrid(pokeList []entity.Pokemon) [][]string {
 	worldGrid := make([][]string, WORLD_SIZE)
 	rows := make([]string, WORLD_SIZE*WORLD_SIZE)
 	for i := 0; i < WORLD_SIZE; i++ {
 		worldGrid[i] = rows[i*WORLD_SIZE : (i+1)*WORLD_SIZE : (i+1)*WORLD_SIZE]
 	}
 	__fillWorldGrid(worldGrid)
-	__spawnEntities(worldGrid, pokeList, playerList)
+	__spawnEntities(worldGrid, pokeList)
 	return worldGrid
 }
 
@@ -73,19 +75,17 @@ func __fillWorldGrid(worldGrid [][]string) {
 	}
 }
 
-func __spawnEntities(worldGrid [][]string, pokemonList []entity.Pokemon, playerList []entity.Player) {
+func __spawnEntities(worldGrid [][]string, pokemonList []entity.Pokemon) {
 	for _, pokemon := range pokemonList {
 		worldGrid[pokemon.Coordinate.Y][pokemon.Coordinate.X] = POKEMON_SYMBOL
-	}
-
-	for _, player := range playerList {
-		worldGrid[player.Coordinate.Y][player.Coordinate.X] = PLAYER_SYMBOL
 	}
 }
 
 func AddPlayer(player entity.Player) {
-	WORLD.PlayerList = append(WORLD.PlayerList, player)
-	__updatePlayer(WORLD.WorldGrid, WORLD.PlayerList)
+	WORLD.PlayerList[player.Username] = player
+	WORLD.Mu.Lock()
+	__updateSinglePlayer(WORLD.WorldGrid, player)
+	WORLD.Mu.Unlock()
 }
 
 func GenerateRandomCoordinate(player entity.Player) entity.Player {
@@ -106,10 +106,18 @@ RECHECK:
 	}
 }
 
-func __updatePlayer(worldGrid [][]string, playerList []entity.Player) {
+func __updatePlayer(worldGrid [][]string, playerList map[string]entity.Player) {
 	for _, player := range playerList {
 		worldGrid[player.Coordinate.Y][player.Coordinate.X] = PLAYER_SYMBOL
 	}
+}
+
+func __updateSinglePlayer(worldGrid [][]string, player entity.Player) {
+	worldGrid[player.Coordinate.Y][player.Coordinate.X] = PLAYER_SYMBOL
+}
+
+func ExecutePlayerAction(worldGrid [][]string, player entity.Player, keyPressed string) {
+	
 }
 
 // func StartWorld() World{
