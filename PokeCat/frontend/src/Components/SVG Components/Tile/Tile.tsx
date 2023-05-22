@@ -4,7 +4,7 @@ export interface TileProps {
     offsetX?: number
     offsetY?: number,
     key?: string,
-    children?: React.ReactNode
+    children?: string
 }
 
 export const Tile = (props: TileProps) => {
@@ -19,7 +19,7 @@ export const Tile = (props: TileProps) => {
         <>
             {   
                 (children == "FT" && <FreeTile {...props}/>) ||
-                (children == "&" && <PokeTile {...props}/>) ||
+                (children?.includes("&") && <PokeTile {...props}/>) ||
                 (children == "#" && <PlayerTile {...props}/>)
             }
         </>

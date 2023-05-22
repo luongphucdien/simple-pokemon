@@ -3,6 +3,7 @@ type Player struct {
 	Entity
 	Username string
 	Password string
+	PokeList []string
 	// movement Movement
 }
 

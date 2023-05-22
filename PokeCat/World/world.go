@@ -1,27 +1,32 @@
 package world
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"math/rand"
+	"os"
+	"strings"
 	"sync"
 	"time"
 
 	entity "github.com/simple-pokemon/go/PokeCat/Entity"
 )
 
-const WORLD_SIZE = 10
+const WORLD_SIZE = 100
 const FREE_TILE_SYMBOL = "FT"
 const PLAYER_SYMBOL = "#"
 const POKEMON_SYMBOL = "&"
 
 var WORLD World
-var PLAYERS_ONLINE []entity.Player
-var POKEMON_LIST []entity.Pokemon
 
 type World struct {
-	WorldGrid  [][]string
-	PokeList   []entity.Pokemon
-	PlayerList map[string]entity.Player
-	Mu         sync.RWMutex
+	WorldGrid    [][]string
+	PlayerList   map[string]entity.Player
+	PokeDex      map[string]entity.Pokemon
+	CurrPokemons []entity.Pokemon
+	IDList       []string
+	Mu           sync.RWMutex
 }
 
 type Coordinate struct {
@@ -35,35 +40,28 @@ type FreeTile struct {
 }
 
 func NewWorld() World {
-	PLAYERS_ONLINE = make([]entity.Player, 0)
-	POKEMON_LIST = make([]entity.Pokemon, 0)
-
-	pokeListTest := []entity.Pokemon{
-		{Name: "test1", Entity: entity.Entity{Coordinate: entity.Coordinate{X: 5, Y: 5}}},
-		{Name: "test2", Entity: entity.Entity{Coordinate: entity.Coordinate{X: 6, Y: 4}}},
-		{Name: "test3", Entity: entity.Entity{Coordinate: entity.Coordinate{X: 7, Y: 3}}},
-		{Name: "test4", Entity: entity.Entity{Coordinate: entity.Coordinate{X: 8, Y: 2}}},
-		{Name: "test5", Entity: entity.Entity{Coordinate: entity.Coordinate{X: 2, Y: 8}}},
-	}
 
 	newWorld := World{
-		WorldGrid:  make([][]string, WORLD_SIZE),
-		PokeList:   pokeListTest,
-		PlayerList: make(map[string]entity.Player),
+		WorldGrid:    make([][]string, WORLD_SIZE),
+		PokeDex:      make(map[string]entity.Pokemon),
+		PlayerList:   make(map[string]entity.Player),
+		IDList:       make([]string, 0),
+		CurrPokemons: make([]entity.Pokemon, 0),
 	}
 
-	newWorld.WorldGrid = __initWorldGrid(pokeListTest)
+	newWorld.PokeDex = __loadPokeDex()
+	newWorld.IDList = __extractPokeIDs(newWorld.PokeDex)
+	newWorld.WorldGrid = __initWorldGrid()
 	return newWorld
 }
 
-func __initWorldGrid(pokeList []entity.Pokemon) [][]string {
+func __initWorldGrid() [][]string {
 	worldGrid := make([][]string, WORLD_SIZE)
 	rows := make([]string, WORLD_SIZE*WORLD_SIZE)
 	for i := 0; i < WORLD_SIZE; i++ {
 		worldGrid[i] = rows[i*WORLD_SIZE : (i+1)*WORLD_SIZE : (i+1)*WORLD_SIZE]
 	}
 	__fillWorldGrid(worldGrid)
-	__spawnEntities(worldGrid, pokeList)
 	return worldGrid
 }
 
@@ -75,10 +73,60 @@ func __fillWorldGrid(worldGrid [][]string) {
 	}
 }
 
-func __spawnEntities(worldGrid [][]string, pokemonList []entity.Pokemon) {
-	for _, pokemon := range pokemonList {
-		worldGrid[pokemon.Coordinate.Y][pokemon.Coordinate.X] = POKEMON_SYMBOL
+func SpawnPokemons() {
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	r.Shuffle(len(WORLD.IDList), func(i, j int) { WORLD.IDList[i], WORLD.IDList[j] = WORLD.IDList[j], WORLD.IDList[i] })
+
+	for _, ID := range WORLD.IDList {
+		if len(WORLD.CurrPokemons) >= 50 {
+			break
+		} else {
+			pokemon := WORLD.PokeDex[ID]
+			pokemon.Coordinate.X = r.Intn(WORLD_SIZE-0) + 0
+			pokemon.Coordinate.Y = r.Intn(WORLD_SIZE-0) + 0
+
+		RECHECK:
+			if WORLD.WorldGrid[pokemon.Coordinate.Y][pokemon.Coordinate.X] != FREE_TILE_SYMBOL {
+				pokemon.Coordinate.X = r.Intn(WORLD_SIZE-0) + 0
+				pokemon.Coordinate.Y = r.Intn(WORLD_SIZE-0) + 0
+				goto RECHECK
+			} else {
+				goto CONTINUE
+			}
+
+		CONTINUE:
+			WORLD.CurrPokemons = append(WORLD.CurrPokemons, pokemon)
+			WORLD.WorldGrid[pokemon.Coordinate.Y][pokemon.Coordinate.X] = POKEMON_SYMBOL + ID
+			pokemon.EffortValueYield[len(pokemon.EffortValueYield)-1] = 0.5 + r.Float32()*(1-0.5)
+		}
 	}
+}
+
+func __extractPokeIDs(pokeDex map[string]entity.Pokemon) []string {
+	var IDs []string
+
+	for key := range pokeDex {
+		IDs = append(IDs, key)
+	}
+
+	return IDs
+}
+
+func __loadPokeDex() map[string]entity.Pokemon {
+	var pokeDex map[string]entity.Pokemon
+
+	pokeDexJSON, err := os.Open("./PokeCat/Entity/pokedexFinal.json")
+	if err != nil {
+		fmt.Println("Error: ", err)
+		return nil
+	}
+	defer pokeDexJSON.Close()
+
+	byteValue, _ := ioutil.ReadAll(pokeDexJSON)
+
+	json.Unmarshal([]byte(byteValue), &pokeDex)
+
+	return pokeDex
 }
 
 func AddPlayer(player entity.Player) {
@@ -116,8 +164,20 @@ func __updateSinglePlayer(worldGrid [][]string, player entity.Player) {
 	worldGrid[player.Coordinate.Y][player.Coordinate.X] = PLAYER_SYMBOL
 }
 
-func ExecutePlayerAction(worldGrid [][]string, player entity.Player, keyPressed string) {
-	
+func GetPokemon(player entity.Player) {
+	tile := WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X]
+
+	if strings.Contains(tile, "&") {
+		s := strings.Split(tile, "&")
+		ID := s[1]
+		for _, IDInList := range player.PokeList {
+			if ID == IDInList {
+				break
+			} else {
+				player.PokeList = append(player.PokeList, ID)
+			}
+		}
+	}
 }
 
 // func StartWorld() World{

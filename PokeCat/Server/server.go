@@ -64,7 +64,6 @@ func playerAction(c *gin.Context) {
 
 	keyPressed := strings.ToLower(playerAction.Action)
 	player := world.WORLD.PlayerList[playerAction.Username]
-	fmt.Println(playerAction.Action)
 
 	world.WORLD.Mu.Lock()
 
@@ -167,12 +166,14 @@ func removePlayer(c *gin.Context) {
 	delete(world.WORLD.PlayerList, player.Username)
 	world.WORLD.Mu.Unlock()
 
-	playerFile, err := os.Open("./PokeCat/Server/players/" + player.Username + ".gob")
+	playerFile, err := os.Create("./PokeCat/Server/players/" + player.Username + ".gob")
 	if err != nil {
 		fmt.Println("Error: ", err)
 		return
 	}
 	defer playerFile.Close()
+
+	fmt.Println(player.Coordinate.X, player.Coordinate.Y)
 
 	enc := gob.NewEncoder(playerFile)
 	enc.Encode(&player)
