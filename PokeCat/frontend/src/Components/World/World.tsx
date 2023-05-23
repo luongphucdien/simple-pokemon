@@ -7,6 +7,8 @@ import { useIdleTimer } from "react-idle-timer"
 export const World = (props: {setUsername: (username: string) => void, username: string}) => {
     
     const map = useRef<SVGGElement>(null)
+    const [worldGrid, setWorldGrid] = useState<Array<Array<string>>>()
+    const [playerCoord, setPlayerCoord] = useState<number[]>([])
 
     const onIdle = () => {
         removePlayer(props.username)
@@ -19,54 +21,53 @@ export const World = (props: {setUsername: (username: string) => void, username:
       })
     
     useEffect(() => {
+        // let t: SVGTransform
+        // let g: SVGGElement = map.current!
         
         const interval = setInterval(() => {
-            getWorld(setWorldGrid)
+            getWorld(props.username, setWorldGrid, setPlayerCoord, map.current!)
         }, 500)
 
         const handleKeydown = (e: KeyboardEvent) => {
             e.preventDefault()
-            sendAction(e.key, props.username)
+            sendAction(e.key, props.username) 
 
-            let t: SVGTransform
-            let g:SVGGElement = map.current!
-
-            if (e.key.toLowerCase() === "w") {
-                if(g.transform.baseVal.numberOfItems === 0) {
-                    g.setAttribute("transform", "translate(" + 0 + "," + (40) + ")")
-                }
-                else {
-                    t = g.transform.baseVal.getItem(0)
-                    t.setMatrix(t.matrix.translate(0, 40))
-                }
-            }
-            else if (e.key.toLowerCase() === "s") {
-                if(g.transform.baseVal.numberOfItems === 0) {
-                    g.setAttribute("transform", "translate(" + 0 + "," + (-40) + ")")
-                }
-                else {
-                    t = g.transform.baseVal.getItem(0)
-                    t.setMatrix(t.matrix.translate(0, -40))
-                }
-            }
-            else if (e.key.toLowerCase() === "a") {
-                if(g.transform.baseVal.numberOfItems === 0) {
-                    g.setAttribute("transform", "translate(" + (40) + "," + 0 + ")")
-                }
-                else {
-                    t = g.transform.baseVal.getItem(0)
-                    t.setMatrix(t.matrix.translate(40, 0))
-                }
-            }
-            else if (e.key.toLowerCase() === "d") {
-                if(g.transform.baseVal.numberOfItems === 0) {
-                    g.setAttribute("transform", "translate(" + (-40) + "," + 0 + ")")
-                }
-                else {
-                    t = g.transform.baseVal.getItem(0)
-                    t.setMatrix(t.matrix.translate(-40, 0))
-                }
-            }
+            // if (e.key.toLowerCase() === "w") {
+            //     if(g.transform.baseVal.numberOfItems === 0) {
+            //         g.setAttribute("transform", "translate(" + 0 + "," + (40) + ")")
+            //     }
+            //     else {
+            //         t = g.transform.baseVal.getItem(0)
+            //         t.setMatrix(t.matrix.translate(0, 40))
+            //     }
+            // }
+            // else if (e.key.toLowerCase() === "s") {
+            //     if(g.transform.baseVal.numberOfItems === 0) {
+            //         g.setAttribute("transform", "translate(" + 0 + "," + (-40) + ")")
+            //     }
+            //     else {
+            //         t = g.transform.baseVal.getItem(0)
+            //         t.setMatrix(t.matrix.translate(0, -40))
+            //     }
+            // }
+            // else if (e.key.toLowerCase() === "a") {
+            //     if(g.transform.baseVal.numberOfItems === 0) {
+            //         g.setAttribute("transform", "translate(" + (40) + "," + 0 + ")")
+            //     }
+            //     else {
+            //         t = g.transform.baseVal.getItem(0)
+            //         t.setMatrix(t.matrix.translate(40, 0))
+            //     }
+            // }
+            // else if (e.key.toLowerCase() === "d") {
+            //     if(g.transform.baseVal.numberOfItems === 0) {
+            //         g.setAttribute("transform", "translate(" + (-40) + "," + 0 + ")")
+            //     }
+            //     else {
+            //         t = g.transform.baseVal.getItem(0)
+            //         t.setMatrix(t.matrix.translate(-40, 0))
+            //     }
+            // }
         }
 
         const handleReload = () => {
@@ -84,16 +85,21 @@ export const World = (props: {setUsername: (username: string) => void, username:
         }
     }, [])
 
-    const [worldGrid, setWorldGrid] = useState<Array<Array<string>>>()
+    
 
     return (
         <>
             <Row justify={"center"}>
                 <Col>
                     <p>{props.username}</p>
+                    <p>{`[${playerCoord[0]}, ${playerCoord[1]}]`}</p>
                     
                     <svg viewBox="0 0 400 400" width={400} height={400}>
-                        <rect width="100%" height="100%" x="0" y="0" fill="gray"/>
+                        <line x1={200} x2={200} y1={0} y2={400} stroke="red"></line>
+                        <line x1={0} x2={400} y1={200} y2={200} stroke="red"></line>
+
+                        <rect width="100%" height="100%" x="0" y="0" fill="gray" opacity={0.5}/>
+                        
                         <g ref={map}>
                             {worldGrid?.map((y,i)=>(
                                 y.map((x,j)=>(

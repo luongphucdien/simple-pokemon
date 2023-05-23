@@ -161,7 +161,7 @@ func __updatePlayer(worldGrid [][]string, playerList map[string]entity.Player) {
 }
 
 func __updateSinglePlayer(worldGrid [][]string, player entity.Player) {
-	worldGrid[player.Coordinate.Y][player.Coordinate.X] = PLAYER_SYMBOL
+	worldGrid[player.Coordinate.Y][player.Coordinate.X] = PLAYER_SYMBOL + "-" + player.Username
 }
 
 func GetPokemon(player entity.Player) {

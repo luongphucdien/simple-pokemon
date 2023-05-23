@@ -20,7 +20,7 @@ func StartServer() {
 	router.Use(CORSMiddleware())
 	router.GET("/api/test", test)
 	router.POST("/api/player/action", playerAction)
-	router.GET("/api/world", getWorld)
+	router.GET("/api/world/:username", getWorld)
 	router.POST("/api/player", checkPlayer)
 	router.POST("/api/player/offline", removePlayer)
 	// router.GET("/api/player", getPlayer)
@@ -92,11 +92,14 @@ func playerAction(c *gin.Context) {
 			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.PLAYER_SYMBOL
 		}
 	}
+
+	world.GetPokemon(player)
+
 	world.WORLD.PlayerList[playerAction.Username] = player
 
 	world.WORLD.Mu.Unlock()
 
-	c.JSON(http.StatusOK, gin.H{"world-data": world.WORLD})
+	c.JSON(http.StatusOK, gin.H{})
 }
 
 // func getNumber(c *gin.Context) {
@@ -104,7 +107,10 @@ func playerAction(c *gin.Context) {
 // }
 
 func getWorld(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"world": world.WORLD.WorldGrid, "world_data": world.WORLD})
+	username := c.Params.ByName("username")
+	player := world.WORLD.PlayerList[username]
+
+	c.JSON(http.StatusOK, gin.H{"world-data": world.WORLD, "playerCoord": []int{player.Coordinate.X, player.Coordinate.Y}})
 }
 
 func checkPlayer(c *gin.Context) {
