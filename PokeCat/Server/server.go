@@ -101,7 +101,7 @@ func playerAction(c *gin.Context) {
 			noReplace = false
 		}
 	}
-	
+
 	oldTile := world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X]
 	if strings.Contains(oldTile, world.POKEMON_SYMBOL) {
 		arr := strings.Split(oldTile, world.PLAYER_SYMBOL)
@@ -112,13 +112,13 @@ func playerAction(c *gin.Context) {
 
 	player.Coordinate.X = newX
 	player.Coordinate.Y = newY
-	
+
 	if noReplace {
 		world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] += world.PLAYER_SYMBOL + player.Username
 	} else {
 		world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.PLAYER_SYMBOL + player.Username
 	}
-	
+
 	world.WORLD.PlayerList[playerAction.Username] = player
 
 	world.WORLD.Mu.Unlock()

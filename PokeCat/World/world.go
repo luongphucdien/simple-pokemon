@@ -20,12 +20,12 @@ const POKEMON_SYMBOL = "&"
 var WORLD World
 
 type World struct {
-	WorldGrid    [][]string
-	PlayerList   map[string]entity.Player
-	PokeDex      map[string]entity.Pokemon
-	CurrPokemons []entity.Pokemon
-	IDList       []string
-	Mu           sync.RWMutex
+	WorldGrid     [][]string
+	PlayerList    map[string]entity.Player
+	PokeDex       map[string]entity.Pokemon
+	CurrPokemons  []entity.Pokemon
+	IDList        []string
+	Mu            sync.RWMutex
 }
 
 type Coordinate struct {
