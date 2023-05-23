@@ -101,6 +101,10 @@ func SpawnPokemons() {
 	}
 }
 
+func SpawnTestPokemon() {
+	WORLD.WorldGrid[0][0] = "&6"
+}
+
 func __extractPokeIDs(pokeDex map[string]entity.Pokemon) []string {
 	var IDs []string
 
@@ -160,7 +164,7 @@ func __updatePlayer(worldGrid [][]string, playerList map[string]entity.Player) {
 }
 
 func __updateSinglePlayer(worldGrid [][]string, player entity.Player) {
-	worldGrid[player.Coordinate.Y][player.Coordinate.X] = PLAYER_SYMBOL + "-" + player.Username
+	worldGrid[player.Coordinate.Y][player.Coordinate.X] = PLAYER_SYMBOL + player.Username
 }
 
 // func StartWorld() World{

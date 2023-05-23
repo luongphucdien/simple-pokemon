@@ -88,18 +88,37 @@ func playerAction(c *gin.Context) {
 	}
 
 	nextTile := world.WORLD.WorldGrid[newY][newX]
+	var noReplace bool
 	if strings.Contains(nextTile, "&") {
 		arr := strings.Split(nextTile, "&")
 		ID := arr[1]
 		pokemonID, _ := strconv.ParseInt(ID, 10, 0)
 
-		player.PokeList[pokemonID] = struct{}{}
-
+		if _, isExisted := player.PokeList[pokemonID]; isExisted {
+			noReplace = true
+		} else {
+			player.PokeList[pokemonID] = struct{}{}
+			noReplace = false
+		}
+	}
+	
+	oldTile := world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X]
+	if strings.Contains(oldTile, world.POKEMON_SYMBOL) {
+		arr := strings.Split(oldTile, world.PLAYER_SYMBOL)
+		world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = arr[0]
+	} else {
+		world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.FREE_TILE_SYMBOL
 	}
 
 	player.Coordinate.X = newX
 	player.Coordinate.Y = newY
-
+	
+	if noReplace {
+		world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] += world.PLAYER_SYMBOL + player.Username
+	} else {
+		world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.PLAYER_SYMBOL + player.Username
+	}
+	
 	world.WORLD.PlayerList[playerAction.Username] = player
 
 	world.WORLD.Mu.Unlock()

@@ -30,44 +30,7 @@ export const World = (props: {setUsername: (username: string) => void, username:
 
         const handleKeydown = (e: KeyboardEvent) => {
             e.preventDefault()
-            sendAction(e.key, props.username) 
-
-            // if (e.key.toLowerCase() === "w") {
-            //     if(g.transform.baseVal.numberOfItems === 0) {
-            //         g.setAttribute("transform", "translate(" + 0 + "," + (40) + ")")
-            //     }
-            //     else {
-            //         t = g.transform.baseVal.getItem(0)
-            //         t.setMatrix(t.matrix.translate(0, 40))
-            //     }
-            // }
-            // else if (e.key.toLowerCase() === "s") {
-            //     if(g.transform.baseVal.numberOfItems === 0) {
-            //         g.setAttribute("transform", "translate(" + 0 + "," + (-40) + ")")
-            //     }
-            //     else {
-            //         t = g.transform.baseVal.getItem(0)
-            //         t.setMatrix(t.matrix.translate(0, -40))
-            //     }
-            // }
-            // else if (e.key.toLowerCase() === "a") {
-            //     if(g.transform.baseVal.numberOfItems === 0) {
-            //         g.setAttribute("transform", "translate(" + (40) + "," + 0 + ")")
-            //     }
-            //     else {
-            //         t = g.transform.baseVal.getItem(0)
-            //         t.setMatrix(t.matrix.translate(40, 0))
-            //     }
-            // }
-            // else if (e.key.toLowerCase() === "d") {
-            //     if(g.transform.baseVal.numberOfItems === 0) {
-            //         g.setAttribute("transform", "translate(" + (-40) + "," + 0 + ")")
-            //     }
-            //     else {
-            //         t = g.transform.baseVal.getItem(0)
-            //         t.setMatrix(t.matrix.translate(-40, 0))
-            //     }
-            // }
+            sendAction(e.key, props.username)
         }
 
         const handleReload = () => {

@@ -8,6 +8,7 @@ import (
 func main() {	
 	world.WORLD = world.NewWorld()
 	world.SpawnPokemons()
+	// world.SpawnTestPokemon()
 	
 	server.StartServer()
 }

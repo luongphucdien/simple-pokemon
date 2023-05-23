@@ -1,4 +1,4 @@
-import { FreeTile, PlayerTile, PokeTile } from "./TileSVG"
+import { FreeTile, PlayerAndPokemonTile, PlayerTile, PokeTile } from "./TileSVG"
 
 export interface TileProps {
     offsetX?: number
@@ -19,8 +19,10 @@ export const Tile = (props: TileProps) => {
         <>
             {   
                 (children == "FT" && <FreeTile {...props}/>) ||
+                (children?.includes("#") && children.includes("&") && <PlayerAndPokemonTile {...props}/>) ||
                 (children?.includes("&") && <PokeTile {...props}/>) ||
-                (children == "#" && <PlayerTile {...props}/>)
+                (children?.includes("#") && <PlayerTile {...props}/>)
+                
             }
         </>
     )
