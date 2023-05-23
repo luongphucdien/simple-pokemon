@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -64,36 +65,40 @@ func playerAction(c *gin.Context) {
 
 	keyPressed := strings.ToLower(playerAction.Action)
 	player := world.WORLD.PlayerList[playerAction.Username]
+	newX, newY := player.Coordinate.X, player.Coordinate.Y
 
 	world.WORLD.Mu.Lock()
 
 	if keyPressed == entity.W {
 		if player.Coordinate.Y-1 >= 0 {
-			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.FREE_TILE_SYMBOL
-			player.Coordinate.Y--
-			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.PLAYER_SYMBOL
+			newY = player.Coordinate.Y - 1
 		}
 	} else if keyPressed == entity.S {
 		if player.Coordinate.Y+1 < world.WORLD_SIZE {
-			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.FREE_TILE_SYMBOL
-			player.Coordinate.Y++
-			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.PLAYER_SYMBOL
+			newY = player.Coordinate.Y + 1
 		}
 	} else if keyPressed == entity.A {
 		if player.Coordinate.X-1 >= 0 {
-			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.FREE_TILE_SYMBOL
-			player.Coordinate.X--
-			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.PLAYER_SYMBOL
+			newX = player.Coordinate.X - 1
 		}
 	} else if keyPressed == entity.D {
 		if player.Coordinate.X+1 < world.WORLD_SIZE {
-			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.FREE_TILE_SYMBOL
-			player.Coordinate.X++
-			world.WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X] = world.PLAYER_SYMBOL
+			newX = player.Coordinate.X + 1
 		}
 	}
 
-	world.GetPokemon(player)
+	nextTile := world.WORLD.WorldGrid[newY][newX]
+	if strings.Contains(nextTile, "&") {
+		arr := strings.Split(nextTile, "&")
+		ID := arr[1]
+		pokemonID, _ := strconv.ParseInt(ID, 10, 0)
+
+		player.PokeList[pokemonID] = struct{}{}
+
+	}
+
+	player.Coordinate.X = newX
+	player.Coordinate.Y = newY
 
 	world.WORLD.PlayerList[playerAction.Username] = player
 
@@ -130,6 +135,7 @@ func checkPlayer(c *gin.Context) {
 		defer playerFile.Close()
 
 		player = world.GenerateRandomCoordinate(player)
+		player.PokeList = make(map[int64]struct{})
 
 		enc := gob.NewEncoder(playerFile)
 		enc.Encode(&player)
@@ -179,7 +185,7 @@ func removePlayer(c *gin.Context) {
 	}
 	defer playerFile.Close()
 
-	fmt.Println(player.Coordinate.X, player.Coordinate.Y)
+	fmt.Println(player.PokeList)
 
 	enc := gob.NewEncoder(playerFile)
 	enc.Encode(&player)
