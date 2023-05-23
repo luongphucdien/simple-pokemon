@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"os"
-	"strings"
 	"sync"
 	"time"
 
@@ -162,22 +161,6 @@ func __updatePlayer(worldGrid [][]string, playerList map[string]entity.Player) {
 
 func __updateSinglePlayer(worldGrid [][]string, player entity.Player) {
 	worldGrid[player.Coordinate.Y][player.Coordinate.X] = PLAYER_SYMBOL + "-" + player.Username
-}
-
-func GetPokemon(player entity.Player) {
-	tile := WORLD.WorldGrid[player.Coordinate.Y][player.Coordinate.X]
-
-	if strings.Contains(tile, "&") {
-		s := strings.Split(tile, "&")
-		ID := s[1]
-		for _, IDInList := range player.PokeList {
-			if ID == IDInList {
-				break
-			} else {
-				player.PokeList = append(player.PokeList, ID)
-			}
-		}
-	}
 }
 
 // func StartWorld() World{
