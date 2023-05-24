@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios"
 import { UserData } from "../Components/Login"
-
+import { PokeDex } from "../Components/World"
 const API_URL = "http://localhost:8080/api"
 
 async function test(setState: (data:any)=>void) {
@@ -19,13 +19,19 @@ async function testNoParams() {
         console.log(error.response)
     })
 }
-
-async function getWorld(username: string, setState: (data: any) => void, setPlayerCoord: (data: any) => void, map: SVGElement) {
+async function getWorld(
+    username: string, 
+    setState: (data: any) => void, 
+    setPlayerCoord: (data: any) => void, 
+    map: SVGElement,
+    setPokeDex: (data: any) => void,
+    ) {
     await axios.get(`${API_URL}/world/${username}`).then(r => {
-        console.log(r.data["world-data"])
+        // console.log(r.data["world-data"]["PokeDex"])
         setState(r.data["world-data"]["WorldGrid"])
         let playerCoord = r.data["playerCoord"]
         setPlayerCoord(playerCoord)
+        setPokeDex(r.data["world-data"]["PokeDex"])
         map.setAttribute("transform", "translate(" + (180 - playerCoord[0]*40) + "," + (180 - playerCoord[1]*40) + ")")
     }).catch((error: AxiosError) => {
         console.log(error.response)

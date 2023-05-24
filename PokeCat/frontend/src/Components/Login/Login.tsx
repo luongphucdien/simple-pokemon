@@ -1,4 +1,5 @@
-import { Form, Input, Col, Row, Button } from "antd"
+
+import { Form, Input, Col, Row, Button, Typography } from "antd"
 import { sha1 } from "crypto-hash"
 import { addPlayer } from "../../API"
 import { useState } from "react"
@@ -26,6 +27,8 @@ export const Login = (props: LoginProps) => {
         <>
             <Row justify={"center"}>
                 <Col xl={6} md={12} xs={24}>
+
+                    <Typography.Title level={1}>Simple Pokemon</Typography.Title>
                     <Form
                         name="user"
                         onFinish={FormOnFinish}

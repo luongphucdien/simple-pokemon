@@ -20,14 +20,13 @@ const POKEMON_SYMBOL = "&"
 var WORLD World
 
 type World struct {
-	WorldGrid    [][]string
-	PlayerList   map[string]entity.Player
-	PokeDex      map[string]entity.Pokemon
-	CurrPokemons []entity.Pokemon
-	IDList       []string
-	Mu           sync.RWMutex
+	WorldGrid     [][]string
+	PlayerList    map[string]entity.Player
+	PokeDex       map[string]entity.Pokemon
+	CurrPokemons  []entity.Pokemon
+	IDList        []string
+	Mu            sync.RWMutex
 }
-
 type Coordinate struct {
 	X int
 	Y int
@@ -53,7 +52,6 @@ func NewWorld() World {
 	newWorld.WorldGrid = __initWorldGrid()
 	return newWorld
 }
-
 func __initWorldGrid() [][]string {
 	worldGrid := make([][]string, WORLD_SIZE)
 	rows := make([]string, WORLD_SIZE*WORLD_SIZE)
@@ -166,29 +164,3 @@ func __updatePlayer(worldGrid [][]string, playerList map[string]entity.Player) {
 func __updateSinglePlayer(worldGrid [][]string, player entity.Player) {
 	worldGrid[player.Coordinate.Y][player.Coordinate.X] = PLAYER_SYMBOL + player.Username
 }
-
-// func StartWorld() World{
-// 	newWorld := World {
-// 		WorldGrid: RetrieveEmptyWorld(),
-// 		PokeList: make([]entity.Pokemon, 1),
-// 		Player: make([]entity.Player, 1),
-// 	}
-
-// 	return newWorld
-// }
-
-// func SaveWorld(worldGrid [][]string) {
-// 	file, _ := os.Create("./PokeCat/World/world-empty.gob")
-// 	defer file.Close()
-// 	gob.NewEncoder(file).Encode(worldGrid)
-// }
-
-// func RetrieveEmptyWorld() [][]string {
-// 	var emptyWorldGrid [][]string
-
-// 	file, _ := os.Open("./PokeCat/World/world-empty.gob")
-// 	defer file.Close()
-// 	gob.NewDecoder(file).Decode(&emptyWorldGrid)
-
-// 	return emptyWorldGrid
-// }

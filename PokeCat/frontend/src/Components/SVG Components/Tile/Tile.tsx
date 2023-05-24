@@ -18,7 +18,7 @@ export const Tile = (props: TileProps) => {
     return (
         <>
             {   
-                (children == "FT" && <FreeTile {...props}/>) ||
+                (children === "FT" && <FreeTile {...props}/>) ||
                 (children?.includes("#") && children.includes("&") && <PlayerAndPokemonTile {...props}/>) ||
                 (children?.includes("&") && <PokeTile {...props}/>) ||
                 (children?.includes("#") && <PlayerTile {...props}/>)
