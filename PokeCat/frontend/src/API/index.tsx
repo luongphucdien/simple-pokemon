@@ -1,7 +1,6 @@
 import axios, { AxiosError } from "axios"
 import { UserData } from "../Components/Login"
 import { PokeDex } from "../Components/World"
-
 const API_URL = "http://localhost:8080/api"
 
 async function test(setState: (data:any)=>void) {
@@ -20,7 +19,6 @@ async function testNoParams() {
         console.log(error.response)
     })
 }
-
 async function getWorld(
     username: string, 
     setState: (data: any) => void, 

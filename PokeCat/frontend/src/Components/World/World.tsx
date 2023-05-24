@@ -1,4 +1,6 @@
+
 import { Button, Col, Image, Input, Modal, Row, Typography } from "antd"
+
 import {  useEffect, useRef, useState } from "react"
 import { getWorld, removePlayer, sendAction } from "../../API"
 import { Tile } from "../SVG Components"
@@ -24,6 +26,7 @@ interface Pokemon {
 	max_hp:            number
 }
 
+
 export const World = (props: {setUsername: (username: string) => void, username: string}) => {
     
     const map = useRef<SVGGElement>(null)
@@ -32,7 +35,6 @@ export const World = (props: {setUsername: (username: string) => void, username:
     const [pokeDex, setPokeDex] = useState<PokeDex>()
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [pokeID, setPokeID] = useState<string>("")
-
     const onIdle = () => {
         removePlayer(props.username)
         props.setUsername("")
@@ -69,8 +71,6 @@ export const World = (props: {setUsername: (username: string) => void, username:
             clearInterval(interval)
         }
     }, [])
-
-    
     const handleSearch = (value: string) => {
         setPokeID(value)
     }
@@ -80,7 +80,6 @@ export const World = (props: {setUsername: (username: string) => void, username:
         <>
             <Row justify={"center"}>
                 <Col>
-
                     <Button onClick={() => setIsOpen(true)}>Open PokeDex</Button>
                     <Modal open={isOpen} onCancel={() => setIsOpen(false)} onOk={() => setIsOpen(false)}>
                         <Typography.Title level={2}>Pokedex</Typography.Title>
@@ -104,7 +103,6 @@ export const World = (props: {setUsername: (username: string) => void, username:
                             </>
                         )}
                     </Modal>
-
                     <p>{props.username}</p>
                     <p>{`[${playerCoord[0]}, ${playerCoord[1]}]`}</p>
                     
@@ -121,9 +119,7 @@ export const World = (props: {setUsername: (username: string) => void, username:
                                 ))
                             ))}
                         </g>
-                        
                     </svg>
-
                 </Col>
             </Row>
         </>

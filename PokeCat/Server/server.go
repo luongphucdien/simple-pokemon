@@ -126,10 +126,6 @@ func playerAction(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
-// func getNumber(c *gin.Context) {
-// 	c.JSON(http.StatusOK, gin.H{"number": number})
-// }
-
 func getWorld(c *gin.Context) {
 	username := c.Params.ByName("username")
 	player := world.WORLD.PlayerList[username]
@@ -212,6 +208,3 @@ func removePlayer(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"world-data": world.WORLD, "msg": "Player offline and removed"})
 }
 
-// func getPlayer(c *gin.Context) {
-// 	player, err := os.Open("./Server/players" + player.Username + ".gob")
-// }
