@@ -68,6 +68,17 @@ func addPokemonToPlayerList(pokedex Pokedex, playerId string, typepok string) {
 	}
 }
 
+<<<<<<< HEAD
+=======
+func getAccumlatedExpFromLoseTeam(PokList []Pokemon) float32 {
+	getExp := 0.0
+	for _, pok := range PokList {
+		getExp = getExp + float64(pok.AccumulatedExp)
+	}
+	return (float32(getExp) / 3)
+}
+
+>>>>>>> 4d2b0ad5a0b3194fd3f212cdc2e3220e77693209
 func getPokeForBattle(idxPick int, PokList []Pokemon) Pokemon {
 	var pok Pokemon
 	for idx, v := range PokList {
@@ -78,6 +89,7 @@ func getPokeForBattle(idxPick int, PokList []Pokemon) Pokemon {
 	return pok
 }
 
+<<<<<<< HEAD
 // switch pok if another is kill
 
 func switchOtherPok(PokList []Pokemon) {
@@ -94,6 +106,8 @@ func switchOtherPok(PokList []Pokemon) {
 // 	}
 // }
 
+=======
+>>>>>>> 4d2b0ad5a0b3194fd3f212cdc2e3220e77693209
 // p1 take move first: true otherwise false
 func decideFirstMove(pok1 Pokemon, pok2 Pokemon) bool {
 	var isP1MoveFirst bool
@@ -112,6 +126,20 @@ func decideFirstMove(pok1 Pokemon, pok2 Pokemon) bool {
 	}
 	return isP1MoveFirst
 }
+<<<<<<< HEAD
+=======
+
+// func levelingPokemon(playerId string, pokPickedList []Pokemon, expPoint int, accumulatedExp int, ev float32){
+// 	if player, isExisted := PlayerList[playerId]; isExisted {
+// 		for _, pok := range player.PokemonList{
+// 			for _, pickedPok := range pokPickedList{
+// 				if pok.Id == pic
+// 			}
+// 		}
+// 	}
+// }
+
+>>>>>>> 4d2b0ad5a0b3194fd3f212cdc2e3220e77693209
 func getAttackDamage(pokAtk Pokemon, PokDfs Pokemon) float32 {
 	rand.Seed(time.Now().UnixNano())
 	isAttackNormal := rand.Intn(2)
