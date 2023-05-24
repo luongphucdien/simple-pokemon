@@ -124,7 +124,6 @@ export const World = (props: {setUsername: (username: string) => void, username:
                         
                     </svg>
 
-                    <p>{pokeDex && pokeDex["1"]["name"]}</p>
                 </Col>
             </Row>
         </>

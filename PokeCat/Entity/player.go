@@ -4,7 +4,6 @@ type Player struct {
 	Username string
 	Password string
 	PokeList map[int64]struct{}
-	// movement Movement
 }
 
 const (
